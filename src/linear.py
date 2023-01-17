@@ -19,7 +19,7 @@ col1, col2, col3 = st.columns([5, 5, 20])
 # st.image("streamlit.png", width=200)
 # -- Put the title in the last column
 with col3:
-    st.title("Streamlit Demo")
+    st.title("Evolution of NBA Baketball")
 # -- We use the first column here as a dummy to add a space to the left
 
 # -- Get the user input
