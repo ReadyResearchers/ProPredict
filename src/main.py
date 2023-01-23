@@ -1,11 +1,18 @@
 import streamlit as st
 import plotly.express as px
 import pandas as pd
+import numpy as np 
+import pydeck as pdk 
+import altair as alt 
 
 st.set_page_config(layout="wide")
 
+
+# def select_dataset():
 uploaded_file = st.file_uploader("Please select your dataset")
 df = pd.read_csv(uploaded_file)
+
+
 st.write(df)
     
 
@@ -22,43 +29,38 @@ with col3:
     st.title("Evolution of NBA Baketball")
 # -- We use the first column here as a dummy to add a space to the left
 
-# -- Get the user input
-year_col, team_col, log_x_col = st.columns([5, 5, 5])
-with year_col:
-    year_choice = st.slider(
-        "What year would you like to examine?",
-        min_value=1995,
-        max_value=2020,
-        step=1,
-        value=2020,
-    )
-with team_col:
-    Team_choice = st.selectbox(
-        "What team would you like to look at?",
-        ("All", "Suns", "Spurs", "Knicks", "Heat", "Lakers"),
-    )
-with log_x_col:
-    log_x_choice = st.checkbox("Log X Axis?")
+# Filters Dataset
+subset_data = df
+team_name_input = st.sidebar.multiselect(
+'Team name',
+df.groupby('Team').count().reset_index()['Team'].tolist())
+# by country name
+if len(team_name_input) > 0:
+    subset_data = df[df['Team'].isin(team_name_input)]
 
-# -- Read in the data
-# df = px.data.gapminder()
-# -- Apply the year filter given by the user
-filtered_df = df[(df.Team == Team_choice)]
-# -- Apply the continent filter
-if Team_choice != "All":
-    filtered_df = filtered_df[filtered_df.Team == Team_choice]
+metrics =['YEAR','GP','MIN','"%FGA2PT"','Team']
+cols = st.selectbox('Offensive statistic to view', metrics)
+# let's ask the user which column should be used as Index
+if cols in metrics:   
+    metric_to_show = cols
 
-# -- Create the figure in Plotly
-fig = px.scatter(
-    filtered_df,
-    x="YEAR",
-    y="%PTS\n3PT",
-    size="%PTS\n2PT MR",
-    color="Team",
-    # hover_name="country",
-    log_x=log_x_choice,
-    size_max=60,
+
+## linechart
+
+st.subheader('Comparision of Offensive Statistics')
+GP_graph  =alt.Chart(subset_data).transform_filter(
+   alt.datum.GP > 0  
+).mark_line().encode(
+    x=alt.X('Team', type='nominal', title='Team'),
+    y=alt.Y('sum(GP):Q',  title='GP'),
+    color='Team',
+    tooltip = 'sum(GP)',
+).properties(
+    width=1500,
+    height=600
+).configure_axis(
+    labelFontSize=17,
+    titleFontSize=20
 )
-fig.update_layout(title="NBA Team's % of points from Mid Range and Three Point From 2000 to 2020 ")
-# -- Input the Plotly chart to the Streamlit interface
-st.plotly_chart(fig, use_container_width=True)
+
+st.altair_chart(GP_graph)
