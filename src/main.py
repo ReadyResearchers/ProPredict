@@ -2,8 +2,8 @@
 import streamlit as st
 import pandas as pd
 import matplotlib.pyplot as plt
-
 import plotly.express as px
+import plotly.graph_objects as go
 
 st.set_page_config(layout="wide")
 
@@ -34,12 +34,18 @@ def displayplot():
     st.pyplot(fig)
 
 def interactive_plot():
+    #USE SCATTER PLOT
     col1, col2 = st.columns(2)
     
+    sorted_unique_team = sorted(df.Team.unique())
+    selected_team = st.multiselect('Team', sorted_unique_team, sorted_unique_team)
+    st.header("You selected: {}".format(", ".join(selected_team)))
+    
+
     x_axis_val = col1.selectbox('Select the X-axis', options=df.columns)
     y_axis_val = col2.selectbox('Select the Y-axis', options=df.columns)
 
-    plot = px.line(df, x=x_axis_val, y=y_axis_val)
+    plot = px.scatter(df, x=x_axis_val, y=y_axis_val, color = "Team", trendline='ols', trendline_color_override='darkblue')
     st.plotly_chart(plot, use_container_width=True)
 
 # Add a title and intro text

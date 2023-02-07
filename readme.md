@@ -1,18 +1,27 @@
-# Linear Regression Analysis of Basketballs Top Offensive Strategies Throughout The Decades
+# Linear Regression Analysis of Basketballs Top Offensive Strategies
 
-Basketball has changed throughout the decades. From bully ball in the late 90’s to big man dominance in the 2000’s to a three point shooting bonanza in the 2010’s the high level play of the nba has yielded many effective strategies, but which one(s) are the best?
-
-This project takes in a downloaded data file of NBA data and turns it into visualizations user's can manipulate and investigates elements of varying graphs to find measureable data for the improvement of specific sport's teams.
+**Background** This sports analytics web app uses `Streamlits` user interactive dashboard, to be able to conduct research and analysis on sports data. Specifically my project is analyzing how offensive strategies have changed overtime in the NBA dating from the late 1990's up till the end of the 2021 season. Streamlit's graphing tools that allow a user to pick and choose elements from their dataset to be able to visualize possible correlations between statistics and analyze change overtime in their data.
 
 
-# How to run
+# Installation(s)**
+
+- Install streamlit using pip
 
 ```text
-streamlit run <name_of_file>
+command: pip install streamlit
+```
+
+- Run the file to transform code into a web app!
+
+```text
+command: streamlit run <name_of_python_file>
 ```
 
 
 # How to use
+
+Once you are on your streamlit web app it will take you to the home page of the site.
+
 
 - Select your downloaded `csv` file
 
