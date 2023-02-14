@@ -4,6 +4,7 @@ import pandas as pd
 import matplotlib.pyplot as plt
 import plotly.express as px
 import plotly.graph_objects as go
+import datetime
 
 st.set_page_config(layout="wide")
 
@@ -62,6 +63,7 @@ options = st.sidebar.radio('Select what you want to display:', ['Home', 'Data Su
 # Check if file has been uploaded
 if upload_file is not None:
     df = pd.read_csv(upload_file)
+    df['YEAR'] = pd.to_datetime(df['YEAR'])
 
 # Navigation options
 if options == 'Home':
