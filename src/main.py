@@ -39,14 +39,16 @@ def interactive_plot():
     col1, col2 = st.columns(2)
     
     sorted_unique_team = sorted(df.Team.unique())
-    selected_team = st.multiselect('Team', sorted_unique_team, sorted_unique_team)
-    st.header("You selected: {}".format(", ".join(selected_team)))
+    # selected_team = st.multiselect('Team', sorted_unique_team, sorted_unique_team)
+    # st.header("You selected: {}".format(", ".join(selected_team)))
     
 
     x_axis_val = col1.selectbox('Select the X-axis', options=df.columns)
     y_axis_val = col2.selectbox('Select the Y-axis', options=df.columns)
 
-    plot = px.scatter(df, x=x_axis_val, y=y_axis_val, color = "Team", trendline='ols', trendline_color_override='darkblue')
+    plot = px.scatter(df, x=x_axis_val, y=y_axis_val, color = df.Team, trendline='ols', trendline_color_override='green')
+    # text = 'YEAR',
+    # plot.update_traces(textposition="bottom right")
     st.plotly_chart(plot, use_container_width=True)
 
 # Add a title and intro text
@@ -63,7 +65,8 @@ options = st.sidebar.radio('Select what you want to display:', ['Home', 'Data Su
 # Check if file has been uploaded
 if upload_file is not None:
     df = pd.read_csv(upload_file)
-    # df['YEAR'] = pd.to_datetime(df['YEAR'])
+    # df = df.astype({'YEAR':'int'})
+    # df.YEAR = pd.DatetimeIndex(df.YEAR).strftime("%Y")
 
 # Navigation options
 if options == 'Home':
