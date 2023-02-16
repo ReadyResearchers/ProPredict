@@ -63,7 +63,7 @@ options = st.sidebar.radio('Select what you want to display:', ['Home', 'Data Su
 # Check if file has been uploaded
 if upload_file is not None:
     df = pd.read_csv(upload_file)
-    df['YEAR'] = pd.to_datetime(df['YEAR'])
+    # df['YEAR'] = pd.to_datetime(df['YEAR'])
 
 # Navigation options
 if options == 'Home':
