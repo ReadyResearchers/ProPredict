@@ -37,21 +37,14 @@ streamlit run <name_of_python_file>
 # Project Structure
 
 `data` folder:
+
  - Contains the sports csv data set you would like to conduct research upon
  
 NBA offensive team stats is located here as an example csv file
 
-`src` folder: 
+`src` folder:
+
  - Contains all source code located in `main.py` for the implementation of streamlit tool
-
-# Project Structure
-
-- `data/` folder:
-   - Contains the datasets used in the project, stored in CSV  file format.
-   - NBA offensive team stats is located here as an example CSV file.
-
-- `src/` folder:
-   - Contains all the source code for the project.
 
 # Usage
 
@@ -61,6 +54,7 @@ After all dependencies are installed you can run the following command : `stream
 - If you encounter any errors or warnings, check the console output for details.
 
 1. On the home page of the Streamlit app, on the left hand side-bar you will see a button that allows you to upload a CSV file.
+
 - Click the "Browse files" button to select a CSV file from your computer.
 
 2. Click the "Interactive Plots" button on the lower-left to analyze the selected dataset and display the results in a scatter plot
