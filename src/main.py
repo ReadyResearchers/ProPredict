@@ -5,6 +5,9 @@ import matplotlib.pyplot as plt
 import plotly.express as px
 import plotly.graph_objects as go
 import datetime
+import numpy as np
+from sklearn import datasets, linear_model
+from sklearn.metrics import mean_squared_error, r2_score
 
 st.set_page_config(layout="wide")
 
@@ -42,7 +45,6 @@ def interactive_plot():
     # selected_team = st.multiselect('Team', sorted_unique_team, sorted_unique_team)
     # st.header("You selected: {}".format(", ".join(selected_team)))
     
-
     x_axis_val = col1.selectbox('Select the X-axis', options=df.columns)
     y_axis_val = col2.selectbox('Select the Y-axis', options=df.columns)
 
@@ -50,6 +52,23 @@ def interactive_plot():
     # text = 'YEAR',
     # plot.update_traces(textposition="bottom right")
     st.plotly_chart(plot, use_container_width=True)
+
+    # results = px.get_trendline_results(plot)
+    # st.text(results)
+
+    # display r-square value, however only getting first index which is the suns
+    a = px.get_trendline_results(plot).px_fit_results.iloc[0].rsquared
+    st.text("R-squared value: ")
+    if a >= .5:
+        st.markdown(a)
+        st.text('\u2713')
+    else:
+        st.markdown(a)
+        st.text('\u274c')
+    
+    
+
+
 
 # Add a title and intro text
 st.title('NBA Data Explorer')
