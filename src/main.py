@@ -49,7 +49,8 @@ def interactive_plot():
     y_axis_val = col2.selectbox('Select the Y-axis', options=df1.columns)
 
     plot = px.scatter(df1, x=x_axis_val, y=y_axis_val, color = df1.TEAM, trendline='ols',
-                      trendline_color_override='green', hover_data=['YEAR'])
+                      trendline_color_override='green', hover_name = "TEAM", hover_data=["YEAR", "W"] )
+    
     # plot.update_traces(mode="markers+lines", hovertemplate=None)
     # plot.update_layout(hovermode="x unified")
     # text = 'YEAR',
@@ -72,10 +73,11 @@ def interactive_plot():
     # selected_team = st.multiselect('Team', sorted_unique_team, sorted_unique_team)
     # st.header("You selected: {}".format(", ".join(selected_team)))
     
-    x_axis_val = col3.selectbox('Select the X-axis', options=df2.columns)
-    y_axis_val = col4.selectbox('Select the Y-axis', options=df2.columns)
+    x_axis_val = col3.selectbox('Select the X-axis', options=df2.columns, key = "3")
+    y_axis_val = col4.selectbox('Select the Y-axis', options=df2.columns, key = "4")
 
-    plot = px.scatter(df2, x=x_axis_val, y=y_axis_val, color = df2.TEAM, trendline='ols', trendline_color_override='green')
+    plot = px.scatter(df2, x=x_axis_val, y=y_axis_val, color = df2.TEAM, trendline='ols',
+                       trendline_color_override='green', hover_name = "Player", hover_data=["TEAM", "YEAR"])
     # text = 'YEAR',
     # plot.update_traces(textposition="bottom right")
     st.plotly_chart(plot, use_container_width=True)
