@@ -8,6 +8,7 @@ import datetime
 import numpy as np
 from sklearn import datasets, linear_model
 from sklearn.metrics import mean_squared_error, r2_score
+from PIL import Image
 
 st.set_page_config(layout="wide")
 
@@ -17,6 +18,7 @@ def home(uploaded_file):
         st.header('Begin exploring the data using the menu on the left')
     else:
         st.header('To begin please upload a file')
+    
 
 def data_summary():
 	st.header('Statistics of Dataframe')
@@ -27,15 +29,8 @@ def data_header():
     st.header('Header of Dataframe')
     st.write(df1.head())
 
-def displayplot():
+def predictive_modeling():
     st.header('Plot of Data')
-    
-    fig, ax = plt.subplots(1,1)
-    ax.scatter(x=df1['TEAM'], y=df1['GP'])
-    ax.set_xlabel('TEAM')
-    ax.set_ylabel('GP')
-    
-    st.pyplot(fig)
 
 def interactive_plot():
     #USE SCATTER PLOT
@@ -51,10 +46,8 @@ def interactive_plot():
     plot = px.scatter(df1, x=x_axis_val, y=y_axis_val, color = df1.TEAM, trendline='ols',
                       trendline_color_override='green', hover_name = "TEAM", hover_data=["YEAR", "W"] )
     
-    # plot.update_traces(mode="markers+lines", hovertemplate=None)
-    # plot.update_layout(hovermode="x unified")
-    # text = 'YEAR',
-    # plot.update_traces(textposition="bottom right")
+    
+
     st.plotly_chart(plot, use_container_width=True)
     a = px.get_trendline_results(plot).px_fit_results.iloc[0].rsquared
     st.text("R-squared value: ")
@@ -67,17 +60,30 @@ def interactive_plot():
 
 
 
-    col3, col4 = st.columns(2)
+    col3, col4, col5 = st.columns(3)
     
     sorted_unique_team = sorted(df2.TEAM.unique())
     # selected_team = st.multiselect('Team', sorted_unique_team, sorted_unique_team)
     # st.header("You selected: {}".format(", ".join(selected_team)))
     
+
+    players = df2['Player'].unique()
+    selected_player = col5.selectbox("Select player", players)
+    filtered_data_players = df2[df2['Player'] == selected_player]
+
+    df2['TEAM'].unique()
+    # selected_team = col6.selectbox("Select Team", teams)
+    # filtered_data_team = df2[df2['TEAM'] == selected_team]
+
+
     x_axis_val = col3.selectbox('Select the X-axis', options=df2.columns, key = "3")
     y_axis_val = col4.selectbox('Select the Y-axis', options=df2.columns, key = "4")
 
-    plot = px.scatter(df2, x=x_axis_val, y=y_axis_val, color = df2.TEAM, trendline='ols',
+    # took out df2 df2.TEAM
+    plot = px.scatter(filtered_data_players , x=x_axis_val, y=y_axis_val, color = 'TEAM', trendline='ols',
                        trendline_color_override='green', hover_name = "Player", hover_data=["TEAM", "YEAR"])
+    
+    
     # text = 'YEAR',
     # plot.update_traces(textposition="bottom right")
     st.plotly_chart(plot, use_container_width=True)
@@ -114,8 +120,12 @@ options = st.sidebar.radio('Select what you want to display:', ['Home', 'Data Su
 # Check if file has been uploaded
 if upload_file1 is not None:
     df1 = pd.read_csv(upload_file1)
+    # mapping = {player: i for i, player in enumerate(df1['TEAM'].unique())}
+    # df1['TEAM'] = df1['TEAM'].map(mapping)
 if upload_file2 is not None:
     df2 = pd.read_csv(upload_file2)
+    # mapping = {player: i for i, player in enumerate(df2['Player'].unique())}
+    # df2['Player'] = df2['Player'].map(mapping)
     # df = df.astype({'YEAR':'int'})
     # df.YEAR = pd.DatetimeIndex(df.YEAR).strftime("%Y")
 
@@ -126,7 +136,7 @@ elif options == 'Data Summary':
     data_summary()
 elif options == 'Data Header':
     data_header()
-elif options == 'Scatter Plot':
-    displayplot()
+elif options == 'Predictive Modeling':
+    predictive_modeling()
 elif options == 'Interactive Plots':
     interactive_plot()

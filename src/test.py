@@ -1,43 +1,48 @@
-import matplotlib.pyplot as plt
-import numpy as np
-from sklearn import datasets, linear_model
-from sklearn.metrics import mean_squared_error, r2_score
+import pandas as pd
+import plotly.express as px
+import plotly.graph_objects as go
 
-# Load the diabetes dataset
-diabetes_X, diabetes_y = datasets.load_diabetes(return_X_y=True)
+# Load sports dataset into a pandas DataFrame
+df = pd.read_csv('/Users/liam/Desktop/CS600/Evolution-of-NBA-Basketball/data/players.csv')
 
-# Use only one feature
-diabetes_X = diabetes_X[:, np.newaxis, 2]
+# Create a list of player names
+player_names = df['Player'].unique()
 
-# Split the data into training/testing sets
-diabetes_X_train = diabetes_X[:-20]
-diabetes_X_test = diabetes_X[-20:]
+# Create dropdown menu
+dropdown = go.layout.Dropdown(
+    options=[{'label': name, 'value': name} for name in player_names],
+    value=player_names[0],
+)
 
-# Split the targets into training/testing sets
-diabetes_y_train = diabetes_y[:-20]
-diabetes_y_test = diabetes_y[-20:]
+# Define function to filter data for selected player
+def filter_data(selected_player):
+    return df[df['Player'] == selected_player]
 
-# Create linear regression object
-regr = linear_model.LinearRegression()
+# Create initial scatter plot
+fig = px.scatter(df, x='Player', y='PTS', color='player_name')
 
-# Train the model using the training sets
-regr.fit(diabetes_X_train, diabetes_y_train)
+# Add dropdown menu to plot
+fig.update_layout(
+    updatemenus=[
+        go.layout.Updatemenu(
+            buttons=[
+                go.layout.button(
+                    label=name,
+                    method='update',
+                    args=[{'x': [filter_data(name)['x_data']],
+                           'y': [filter_data(name)['y_data']],
+                           'marker.color': [filter_data(name)['player_name']]}],
+                )
+                for name in player_names
+            ],
+            direction='down',
+            showactive=True,
+            active=0,
+            x=0.1,
+            y=1.1
+        )
+    ]
+)
 
-# Make predictions using the testing set
-diabetes_y_pred = regr.predict(diabetes_X_test)
-
-# The coefficients
-print("Coefficients: \n", regr.coef_)
-# The mean squared error
-print("Mean squared error: %.2f" % mean_squared_error(diabetes_y_test, diabetes_y_pred))
-# The coefficient of determination: 1 is perfect prediction
-print("Coefficient of determination: %.2f" % r2_score(diabetes_y_test, diabetes_y_pred))
-
-# Plot outputs
-plt.scatter(diabetes_X_test, diabetes_y_test, color="black")
-plt.plot(diabetes_X_test, diabetes_y_pred, color="blue", linewidth=3)
-
-plt.xticks(())
-plt.yticks(())
-
-plt.show()
+# Display the scatter plot
+fig.show()
