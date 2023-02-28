@@ -8,11 +8,12 @@ import numpy as np
 from sklearn import datasets, linear_model
 from sklearn.metrics import mean_squared_error, r2_score
 from PIL import Image
+from pages import Hello
 
 def interactive_plot():
     #USE SCATTER PLOT
     col1, col2 = st.columns(2)
-    
+    df1 = Hello.setup()
     sorted_unique_team = sorted(df1.TEAM.unique())
     # selected_team = st.multiselect('Team', sorted_unique_team, sorted_unique_team)
     # st.header("You selected: {}".format(", ".join(selected_team)))
