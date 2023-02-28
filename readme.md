@@ -1,9 +1,14 @@
 # Linear Regression Analysis of Basketballs Top Offensive Strategies
 
 **Background**
-This sports analytics web app utilizes Streamlit's interactive dashboard to conduct research and analysis on NBA data, with a focus on changes in offensive strategies from the late 1990s to the end of the 2021 season. The app leverages Streamlit's powerful graphing tools, which enable users to select elements from the dataset and visualize correlations between statistics, facilitating the analysis of changes over time.
 
+The Sports Analysis Tool is a web application that leverages the power of Streamlit to enable users to explore and analyze NBA player and team data. The tool employs regression analysis and interactive graphing to help users arrive at meaningful conclusions about the data. Users can interact with the tool to filter and sort data, plot different variables against each other, and perform linear regression to uncover relationships between different metrics.
 
+The interface is designed to be user-friendly and accessible to users of all levels of expertise. Whether you are a data scientist, a sports analyst, or a casual fan, the tool can help you gain insights into player and team performance, identify trends, and make data-driven decisions. Some of the features of the tool include a dashboard for easy navigation, customizable graphs and charts, and the ability to export data and visualizations.
+
+Users can explore a wide range of metrics, including player and team statistics, individual player ratings, team rankings, and more. The tool makes it easy to compare different players and teams, identify outliers, and uncover patterns in the data. By using regression analysis and interactive graphing, users can gain a deeper understanding of the factors that contribute to success in the NBA.
+
+Whether you are a sports analyst, a coach, or a fan, the tool can help you make informed decisions and gain valuable insights into the world of professional basketball.
 
 # Installation(s)
 
