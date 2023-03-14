@@ -21,8 +21,9 @@ def home(uploaded_file):
     
 
 def data_summary():
-	st.header('Statistics of Dataframe')
-	st.write(df1)
+    st.header('Statistics of Dataframe')
+    st.write(df1)
+    st.write(df2)
     # st.write(df.describe())
 
 def data_header():
