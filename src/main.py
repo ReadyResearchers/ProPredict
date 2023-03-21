@@ -46,12 +46,14 @@ def team_data(df1):
     selected_teams = st.multiselect('Team', team_option, default='All Teams')
 
     try:
-        if 'All Teams' in selected_teams:
+        if not selected_teams:
+            raise ValueError('Please select at least one team.')
+        elif 'All Teams' in selected_teams:
             df_selected_teams = df1.copy()
         else:
             df_selected_teams = df1[df1.TEAM.isin(selected_teams)].copy()
-    except TypeError:
-        st.warning('Please select at least one team.')
+    except ValueError as e:
+        st.warning(str(e))
         return
     
     x_axis_val = col1.selectbox('Select the X-axis', options=df_selected_teams.columns)
