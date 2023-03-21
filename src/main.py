@@ -54,15 +54,6 @@ def team_data(df1):
         st.warning('Please select at least one team.')
         return
     
-    try:
-        if 'All Teams' in selected_teams:
-            df_selected_teams = df1.copy()
-        else:
-            df_selected_teams = df1[df1.TEAM.isin(selected_teams)].copy()
-    except TypeError:
-        st.warning('Please select at least one team.')
-        retur
-    
     x_axis_val = col1.selectbox('Select the X-axis', options=df_selected_teams.columns)
     y_axis_val = col2.selectbox('Select the Y-axis', options=df_selected_teams.columns)
 
