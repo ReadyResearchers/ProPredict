@@ -161,31 +161,27 @@ def predictive_team_data(df1):
         st.warning(str(e))
         return
 
-    # Select X and Y axes for scatter plot
-    exclude_cols = ['TEAM']
-
-    x_axis_options = [col for col in df_selected_teams.columns if col not in exclude_cols]
-    x_axis_val = col1.selectbox('Select the X-axis', options=x_axis_options)
+    # Select Y axis for scatter plot
+    exclude_cols = ['YEAR', 'TEAM']
     y_axis_options = [col for col in df_selected_teams.columns if col not in exclude_cols]
     y_axis_val = col2.selectbox('Select the Y-axis', options=y_axis_options)
 
-        # Create scatter plot with linear regression trendline
-    plot = px.scatter(df_selected_teams, x=x_axis_val, y=y_axis_val, color=df_selected_teams.TEAM, trendline='ols',
-                      trendline_color_override='green', hover_name="TEAM", hover_data=["YEAR", "W"])
-    
-        # Compute and display R-squared value
-    X = df_selected_teams[x_axis_val]
+    # Create scatter plot with linear regression trendline
+    plot = px.scatter(df_selected_teams, x='YEAR', y=y_axis_val, color=df_selected_teams.TEAM, trendline='ols',
+                    trendline_color_override='green', hover_name="TEAM", hover_data=["YEAR", "W"])
+
+    # Compute and display R-squared value
     y = df_selected_teams[y_axis_val]
-    slope, intercept, r_value, p_value, std_err = stats.linregress(X, y)
+    slope, intercept, r_value, p_value, std_err = stats.linregress(df_selected_teams.YEAR, y)
     r_squared = r_value ** 2
     st.write(f"Scatter plot R-squared value: {r_squared:.2f}")
 
-
-        # Add prediction for next season
-    if x_axis_val == 'YEAR' and y_axis_val != 'YEAR':
-        X_train = df_selected_teams[df_selected_teams.YEAR < 2022][[x_axis_val]]
+    # Add prediction for next season
+    if y_axis_val != 'YEAR':
+        X_train = df_selected_teams[df_selected_teams.YEAR < 2022][['YEAR']]
         y_train = df_selected_teams[df_selected_teams.YEAR < 2022][y_axis_val]
         X_test = np.array([2022]).reshape(-1, 1)
+
 
         # Hyperparameter tuning for linear regression model
         lr_param_grid = {'fit_intercept': [True, False]}
