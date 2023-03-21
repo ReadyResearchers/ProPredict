@@ -115,13 +115,16 @@ def team_data(df1):
 
 
 def player_data(df2):
+    # Create two columns
     col3, col4, col5 = st.columns(3)
     
+    # Select one or more teams from dropdown list
     sorted_unique_team = sorted(df2.TEAM.unique())
     teams_option = ['All Teams'] + sorted_unique_team
     selected_teams = col5.multiselect('Team', teams_option, default='All Teams')
 
     try:
+        # Select appropriate data based on selected team(s)
         if not selected_teams:
             raise ValueError('Please select at least one team.')
         elif 'All Teams' in selected_teams:
@@ -136,6 +139,8 @@ def player_data(df2):
     selected_player = col5.selectbox("Select player", players)
     filtered_data_players = df_selected_teams[df_selected_teams['Player'] == selected_player]
 
+    # Select X and Y axes for scatter plot
+    # exlude unnecessary collumns (ones that contain stringified dates)
     exclude_cols = ['TEAM', 'Player']
     x_axis_options = [col for col in filtered_data_players.columns if col not in exclude_cols]
     y_axis_options = [col for col in filtered_data_players.columns if col not in exclude_cols]
