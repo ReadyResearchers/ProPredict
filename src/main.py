@@ -102,14 +102,20 @@ def player_data(df2):
     teams_option = ['All Teams'] + sorted_unique_team
     selected_teams = col5.multiselect('Team', teams_option, default='All Teams')
 
-    if 'All Teams' in selected_teams:
-        filtered_data_teams = df2.copy()
-    else:
-        filtered_data_teams = df2[df2.TEAM.isin(selected_teams)].copy()
+    try:
+        if not selected_teams:
+            raise ValueError('Please select at least one team.')
+        elif 'All Teams' in selected_teams:
+            df_selected_teams = df2.copy()
+        else:
+            df_selected_teams = df2[df2.TEAM.isin(selected_teams)].copy()
+    except ValueError as e:
+        st.warning(str(e))
+        return
 
-    players = filtered_data_teams['Player'].unique()
+    players = df_selected_teams['Player'].unique()
     selected_player = col5.selectbox("Select player", players)
-    filtered_data_players = filtered_data_teams[filtered_data_teams['Player'] == selected_player]
+    filtered_data_players = df_selected_teams[df_selected_teams['Player'] == selected_player]
 
     x_axis_val = col3.selectbox('Select the X-axis', options=filtered_data_players.columns, key="3")
     y_axis_val = col4.selectbox('Select the Y-axis', options=filtered_data_players.columns, key="4")
