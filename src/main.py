@@ -72,21 +72,9 @@ def team_data(df1):
     y_axis_options = [col for col in df_selected_teams.columns if col not in exclude_cols]
     y_axis_val = col2.selectbox('Select the Y-axis', options=y_axis_options)
 
-        # Create a scatter plot trace for the previous data points
-    scatter_trace = go.Scatter(
-        x=df_selected_teams[x_axis_val],
-        y=df_selected_teams[y_axis_val],
-        mode='markers',
-        name='Previous data points',
-        marker=dict(
-            color='blue',
-            size=10,
-            symbol='circle'
-        )
-    )
-
-    # Add the scatter plot trace for the previous data points
-    plot.add_trace(scatter_trace)
+        # Create scatter plot with linear regression trendline
+    plot = px.scatter(df_selected_teams, x=x_axis_val, y=y_axis_val, color=df_selected_teams.TEAM, trendline='ols',
+                      trendline_color_override='green', hover_name="TEAM", hover_data=["YEAR", "W"])
 
         # Add prediction for next season
     if x_axis_val == 'YEAR' and y_axis_val != 'YEAR':
