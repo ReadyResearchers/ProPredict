@@ -72,6 +72,22 @@ def team_data(df1):
     y_axis_options = [col for col in df_selected_teams.columns if col not in exclude_cols]
     y_axis_val = col2.selectbox('Select the Y-axis', options=y_axis_options)
 
+        # Create a scatter plot trace for the previous data points
+    scatter_trace = go.Scatter(
+        x=df_selected_teams[x_axis_val],
+        y=df_selected_teams[y_axis_val],
+        mode='markers',
+        name='Previous data points',
+        marker=dict(
+            color='blue',
+            size=10,
+            symbol='circle'
+        )
+    )
+
+    # Add the scatter plot trace for the previous data points
+    plot.add_trace(scatter_trace)
+
         # Add prediction for next season
     if x_axis_val == 'YEAR' and y_axis_val != 'YEAR':
         X_train = df_selected_teams[df_selected_teams.YEAR < 2022][[x_axis_val]]
@@ -79,7 +95,7 @@ def team_data(df1):
         X_test = np.array([2022]).reshape(-1, 1)
 
         # Hyperparameter tuning for linear regression model
-        lr_param_grid = {'fit_intercept': [True, False], 'normalize': [True, False]}
+        lr_param_grid = {'fit_intercept': [True, False]}
         lr = LinearRegression()
         lr_grid = GridSearchCV(lr, lr_param_grid, cv=5, scoring='r2')
         lr_grid.fit(X_train, y_train)
