@@ -43,7 +43,89 @@ def data_summary(df1,df2):
 
 
 def team_data(df1):
-    plot = go.Figure()
+    # Create two columns
+    col1, col2 = st.columns(2)
+
+    # Select one or more teams from dropdown list
+    sorted_unique_team = sorted(df1.TEAM.unique())
+    team_option = ['All Teams'] + sorted_unique_team
+    selected_teams = st.multiselect('Team', team_option, default='All Teams')
+
+    try:
+        # Select appropriate data based on selected team(s)
+        if not selected_teams:
+            raise ValueError('Please select at least one team.')
+        elif 'All Teams' in selected_teams:
+            df_selected_teams = df1.copy()
+        else:
+            df_selected_teams = df1[df1.TEAM.isin(selected_teams)].copy()
+    except ValueError as e:
+        st.warning(str(e))
+        return
+
+    # Select X and Y axes for scatter plot
+    exclude_cols = ['TEAM']
+
+    x_axis_options = [col for col in df_selected_teams.columns if col not in exclude_cols]
+    x_axis_val = col1.selectbox('Select the X-axis', options=x_axis_options)
+    y_axis_options = [col for col in df_selected_teams.columns if col not in exclude_cols]
+    y_axis_val = col2.selectbox('Select the Y-axis', options=y_axis_options)
+
+        # Create scatter plot with linear regression trendline
+    plot = px.scatter(df_selected_teams, x=x_axis_val, y=y_axis_val, color=df_selected_teams.TEAM, trendline='ols',
+                      trendline_color_override='green', hover_name="TEAM", hover_data=["YEAR", "W"])
+
+        
+            # Display scatter plot
+    st.plotly_chart(plot, use_container_width=True)
+
+
+def player_data(df2):
+    # Create three columns
+    col3, col4, col5 = st.columns(3)
+    
+    # Select one or more teams from dropdown list
+    sorted_unique_team = sorted(df2.TEAM.unique())
+    teams_option = ['All Teams'] + sorted_unique_team
+    selected_teams = col5.multiselect('Team', teams_option, default='All Teams')
+
+    try:
+        # Select appropriate data based on selected team(s)
+        if not selected_teams:
+            raise ValueError('Please select at least one team.')
+        elif 'All Teams' in selected_teams:
+            df_selected_teams = df2.copy()
+        else:
+            df_selected_teams = df2[df2.TEAM.isin(selected_teams)].copy()
+    except ValueError as e:
+        st.warning(str(e))
+        return
+
+    players = df_selected_teams['Player'].unique()
+    selected_player = col5.selectbox("Select player", players)
+    filtered_data_players = df_selected_teams[df_selected_teams['Player'] == selected_player]
+
+    # Select X and Y axes for scatter plot
+    # exlude unnecessary collumns (ones that contain stringified dates)
+    exclude_cols = ['TEAM', 'Player']
+    x_axis_options = [col for col in filtered_data_players.columns if col not in exclude_cols]
+    y_axis_options = [col for col in filtered_data_players.columns if col not in exclude_cols]
+
+    x_axis_val = col3.selectbox('Select the X-axis', options=x_axis_options, key="3")
+    y_axis_val = col4.selectbox('Select the Y-axis', options=y_axis_options, key="4")
+
+    
+
+    plot = px.scatter(filtered_data_players, x=x_axis_val, y=y_axis_val, color='TEAM', trendline='ols',
+                      trendline_color_override='green', hover_name="Player", hover_data=["TEAM", "YEAR"])
+
+    
+    # Display scatter plot
+    st.plotly_chart(plot, use_container_width=True)
+
+
+def predictive_team_data(df1):
+    # plot = go.Figure()
     # Create two columns
     col1, col2 = st.columns(2)
 
@@ -159,8 +241,8 @@ def team_data(df1):
 
 
 
-def player_data(df2):
-    # Create two columns
+def predictive_player_data(df2):
+    # Create three columns
     col3, col4, col5 = st.columns(3)
     
     # Select one or more teams from dropdown list
@@ -256,7 +338,7 @@ upload_file1 = st.sidebar.file_uploader('Upload a file containing NBA data', key
 upload_file2 = st.sidebar.file_uploader('Upload a file containing NBA data', key ="2")
 #Sidebar navigation
 st.sidebar.title('Navigation')
-options = st.sidebar.radio('Select what you want to display:', ['Home', 'Data Summary', 'Interactive Plots'])
+options = st.sidebar.radio('Select what you want to display:', ['Home', 'Data Summary', 'Interactive Plots', 'Predictive Modeling'])
 
 # Check if file has been uploaded
 try:
@@ -272,6 +354,9 @@ if options == 'Home':
     home()
 elif options == 'Data Summary':
     data_summary(df1,df2)
+elif options == 'Predictive Modeling':
+    predictive_team_data(df1)
+    predictive_player_data(df2)
 elif options == 'Interactive Plots':
     team_data(df1)
     player_data(df2)
