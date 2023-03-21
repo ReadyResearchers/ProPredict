@@ -9,7 +9,6 @@ import numpy as np
 from sklearn.linear_model import LinearRegression
 from sklearn import datasets, linear_model
 from sklearn.metrics import mean_squared_error, r2_score
-from scipy import stats
 from PIL import Image
 
 st.set_page_config(layout="wide")
@@ -149,14 +148,7 @@ def player_data(df2):
     x_axis_val = col3.selectbox('Select the X-axis', options=x_axis_options, key="3")
     y_axis_val = col4.selectbox('Select the Y-axis', options=y_axis_options, key="4")
 
-    # Calculate R-squared value
-    x_data = filtered_data_players[x_axis_val]
-    y_data = filtered_data_players[y_axis_val]
-    slope, intercept, r_value, p_value, std_err = stats.linregress(x_data, y_data)
-    r_squared = r_value ** 2
-
-    # Display R-squared value to user
-    col5.write(f"R-squared: {r_squared:.2f}")
+    
 
     plot = px.scatter(filtered_data_players, x=x_axis_val, y=y_axis_val, color='TEAM', trendline='ols',
                       trendline_color_override='green', hover_name="Player", hover_data=["TEAM", "YEAR"])
@@ -166,8 +158,8 @@ def player_data(df2):
         # Initialize a LinearRegression object
         lr = LinearRegression()
         # Select the data for X and y variables to fit the model
-        X = df_selected_teams[df_selected_teams.YEAR < 2022][[x_axis_val]]
-        y = df_selected_teams[df_selected_teams.YEAR < 2022][[y_axis_val]]
+        X = filtered_data_players[filtered_data_players.YEAR < 2022][[x_axis_val]]
+        y = filtered_data_players[filtered_data_players.YEAR < 2022][[y_axis_val]]
         # Fit the linear regression model using the X and y variables
         lr.fit(X, y)
         # Set the value of the next season to make a prediction for
@@ -193,6 +185,7 @@ def player_data(df2):
             )
         )
         # Compute and display evaluation metrics for the model
+        # Evaluation metrics
         y_pred = lr.predict(X)
         mse = mean_squared_error(y, y_pred)
         r2 = r2_score(y, y_pred)
@@ -223,24 +216,14 @@ options = st.sidebar.radio('Select what you want to display:', ['Home', 'Data Su
 # Check if file has been uploaded
 if upload_file1 is not None:
     df1 = pd.read_csv(upload_file1)
-    # mapping = {player: i for i, player in enumerate(df1['TEAM'].unique())}
-    # df1['TEAM'] = df1['TEAM'].map(mapping)
 if upload_file2 is not None:
     df2 = pd.read_csv(upload_file2)
-    # mapping = {player: i for i, player in enumerate(df2['Player'].unique())}
-    # df2['Player'] = df2['Player'].map(mapping)
-    # df = df.astype({'YEAR':'int'})
-    # df.YEAR = pd.DatetimeIndex(df.YEAR).strftime("%Y")
-
+    
 # Navigation options
 if options == 'Home':
     home(upload_file1)
 elif options == 'Data Summary':
-    data_summary()
-elif options == 'Data Header':
-    data_header()
-elif options == 'Predictive Modeling':
-    predictive_modeling()
+    data_summary(df1,df2)
 elif options == 'Interactive Plots':
     team_data(df1)
     player_data(df2)
