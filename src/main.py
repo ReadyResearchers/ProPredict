@@ -12,6 +12,7 @@ from sklearn.ensemble import RandomForestRegressor
 from sklearn import datasets, linear_model
 from sklearn.metrics import mean_squared_error, r2_score
 from PIL import Image
+from scipy import stats
 
 st.set_page_config(layout="wide")
 
@@ -157,6 +158,14 @@ def predictive_team_data(df1):
         # Create scatter plot with linear regression trendline
     plot = px.scatter(df_selected_teams, x=x_axis_val, y=y_axis_val, color=df_selected_teams.TEAM, trendline='ols',
                       trendline_color_override='green', hover_name="TEAM", hover_data=["YEAR", "W"])
+    
+        # Compute and display R-squared value
+    X = df_selected_teams[x_axis_val]
+    y = df_selected_teams[y_axis_val]
+    slope, intercept, r_value, p_value, std_err = stats.linregress(X, y)
+    r_squared = r_value ** 2
+    st.write(f"Scatter plot R-squared value: {r_squared:.2f}")
+
 
         # Add prediction for next season
     if x_axis_val == 'YEAR' and y_axis_val != 'YEAR':
@@ -175,7 +184,7 @@ def predictive_team_data(df1):
         y_pred_lr = lr_best.predict(X_train)
         r2_lr = r2_score(y_train, y_pred_lr)
 
-        if r2_lr >= 0.5:  # Use linear regression model if R-squared value is significant
+        if round(r2_lr,1) >= 0.5:  # Use linear regression model if R-squared value is significant
             next_stat = lr_best.predict(X_test)
             st.write(f"Predicted {y_axis_val} for 2022: {next_stat[0]:.2f}")
             plot.add_trace(
@@ -279,6 +288,13 @@ def predictive_player_data(df2):
 
     plot = px.scatter(filtered_data_players, x=x_axis_val, y=y_axis_val, color='TEAM', trendline='ols',
                       trendline_color_override='green', hover_name="Player", hover_data=["TEAM", "YEAR"])
+    
+    # Compute and display R-squared value
+    X = filtered_data_players[x_axis_val]
+    y = filtered_data_players[y_axis_val]
+    slope, intercept, r_value, p_value, std_err = stats.linregress(X, y)
+    r_squared = r_value ** 2
+    st.write(f"Scatter plot R-squared value: {r_squared:.2f}")
 
     # Add prediction for next season
     if x_axis_val == 'YEAR' and y_axis_val != 'YEAR':
@@ -297,7 +313,7 @@ def predictive_player_data(df2):
         y_pred_lr = lr_best.predict(X_train)
         r2_lr = r2_score(y_train, y_pred_lr)
 
-        if r2_lr >= 0.5:  # Use linear regression model if R-squared value is significant
+        if round(r2_lr,1) >= 0.5:  # Use linear regression model if R-squared value is significant
             next_stat = lr_best.predict(X_test)
             st.write(f"Predicted {y_axis_val} for 2022: {next_stat[0]:.2f}")
             plot.add_trace(
