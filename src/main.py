@@ -9,6 +9,7 @@ import numpy as np
 from sklearn.linear_model import LinearRegression
 from sklearn import datasets, linear_model
 from sklearn.metrics import mean_squared_error, r2_score
+from scipy import stats
 from PIL import Image
 
 st.set_page_config(layout="wide")
@@ -147,6 +148,15 @@ def player_data(df2):
 
     x_axis_val = col3.selectbox('Select the X-axis', options=x_axis_options, key="3")
     y_axis_val = col4.selectbox('Select the Y-axis', options=y_axis_options, key="4")
+
+    # Calculate R-squared value
+    x_data = filtered_data_players[x_axis_val]
+    y_data = filtered_data_players[y_axis_val]
+    slope, intercept, r_value, p_value, std_err = stats.linregress(x_data, y_data)
+    r_squared = r_value ** 2
+
+    # Display R-squared value to user
+    col5.write(f"R-squared: {r_squared:.2f}")
 
     plot = px.scatter(filtered_data_players, x=x_axis_val, y=y_axis_val, color='TEAM', trendline='ols',
                       trendline_color_override='green', hover_name="Player", hover_data=["TEAM", "YEAR"])
