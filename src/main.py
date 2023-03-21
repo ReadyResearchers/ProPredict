@@ -30,7 +30,8 @@ def home(): #uploaded_file
     st.write("Before you get started, look at these steps:")
     st.write("1. Upload your data file(s) on the left!")
     st.write("2. If you want to see your dataset select Data Summary")
-    st.write("3. If you are ready to research select interactive plots!")
+    st.write("3. If you are ready to research select Interactive Plots!")
+    st.write("4. Want to test out the predictive model? Select Predictive modeling!")
 
 # Add image
     st.image("../img/homepage.png", caption="What will you explore...?", use_column_width=True)
