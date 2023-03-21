@@ -152,15 +152,23 @@ def player_data(df2):
                       trendline_color_override='green', hover_name="Player", hover_data=["TEAM", "YEAR"])
 
     # Add linear regression prediction for next season
-    if x_axis_val == 'YEAR' and y_axis_val in [y_axis_val]:
+    if x_axis_val == 'YEAR' and y_axis_val != 'YEAR':
+        # Initialize a LinearRegression object
         lr = LinearRegression()
-        X = filtered_data_players[filtered_data_players.YEAR < 2022][[x_axis_val]]
-        y = filtered_data_players[filtered_data_players.YEAR < 2022][[y_axis_val]]
+        # Select the data for X and y variables to fit the model
+        X = df_selected_teams[df_selected_teams.YEAR < 2022][[x_axis_val]]
+        y = df_selected_teams[df_selected_teams.YEAR < 2022][[y_axis_val]]
+        # Fit the linear regression model using the X and y variables
         lr.fit(X, y)
+        # Set the value of the next season to make a prediction for
         next_season = 2022
+        # Reshape the next season value to be a 2D array for prediction
         next_year = np.array([next_season]).reshape(-1, 1)
+        # Use the linear regression model to make a prediction for the next season
         next_stat = lr.predict(next_year)
+        # Display the predicted value for the selected y-axis variable and next season
         st.write(f"Predicted {y_axis_val} for {next_season}: {next_stat[0][0]:.2f}")
+        # Add a trace to the plot for the next season prediction
         plot.add_trace(
             go.Scatter(
                 x=[next_season],
@@ -174,18 +182,18 @@ def player_data(df2):
                 )
             )
         )
-        # Evaluation metrics
+        # Compute and display evaluation metrics for the model
         y_pred = lr.predict(X)
         mse = mean_squared_error(y, y_pred)
         r2 = r2_score(y, y_pred)
         st.write(f"Mean squared error: {mse:.2f}")
         st.write(f"R-squared: {r2:.2f}")
     
+    # Display scatter plot
     st.plotly_chart(plot, use_container_width=True)
 
-    # results = px.get_trendline_results(plot)
-    # st.text(results)
 
+    
     
 
 
