@@ -140,9 +140,9 @@ def player_data(df2):
 
 
 def predictive_team_data(df1):
-    # plot = go.Figure()
+    
     # Create two columns
-    col1 = st.columns(1)
+    col1, col2 = st.columns(2)
 
     # Select one or more teams from dropdown list
     sorted_unique_team = sorted(df1.TEAM.unique())
@@ -262,12 +262,12 @@ def predictive_team_data(df1):
 
 def predictive_player_data(df2):
     # Create three columns
-    col2, col3 = st.columns(2)
+    col3, col4, col5 = st.columns(3)
     
     # Select one or more teams from dropdown list
     sorted_unique_team = sorted(df2.TEAM.unique())
     teams_option = ['All Teams'] + sorted_unique_team
-    selected_teams = col3.multiselect('Team', teams_option, default='All Teams')
+    selected_teams = col5.multiselect('Team', teams_option, default='All Teams')
 
     try:
         # Select appropriate data based on selected team(s)
@@ -282,14 +282,14 @@ def predictive_player_data(df2):
         return
 
     players = df_selected_teams['Player'].unique()
-    selected_player = col3.selectbox("Select player", players)
+    selected_player = col5.selectbox("Select player", players)
     filtered_data_players = df_selected_teams[df_selected_teams['Player'] == selected_player]
 
     # Select X and Y axes for scatter plot
     # exlude unnecessary collumns (ones that contain stringified dates)
     exclude_cols = ['TEAM', 'Player', 'YEAR']
     y_axis_options = [col for col in filtered_data_players.columns if col not in exclude_cols]
-    y_axis_val = col2.selectbox('Select the Y-axis', options=y_axis_options)
+    y_axis_val = col4.selectbox('Select the Y-axis', options=y_axis_options)
 
     # Create scatter plot with linear regression trendline
     plot = px.scatter(filtered_data_players, x='YEAR', y=y_axis_val, color=filtered_data_players.TEAM, trendline='ols',
