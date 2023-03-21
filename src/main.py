@@ -193,7 +193,7 @@ upload_file1 = st.sidebar.file_uploader('Upload a file containing NBA data', key
 upload_file2 = st.sidebar.file_uploader('Upload a file containing NBA data', key ="2")
 #Sidebar navigation
 st.sidebar.title('Navigation')
-options = st.sidebar.radio('Select what you want to display:', ['Home', 'Data Summary', 'Data Header', 'Scatter Plot', 'Interactive Plots'])
+options = st.sidebar.radio('Select what you want to display:', ['Home', 'Data Summary', 'Interactive Plots'])
 
 # Check if file has been uploaded
 try:
