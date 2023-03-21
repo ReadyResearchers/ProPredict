@@ -27,24 +27,6 @@ def data_summary(df1,df2):
     st.write(df2)
     # st.write(df.describe())
 
-def data_header():
-    st.header('Header of Dataframe')
-    # st.write(df1.head())
-
-def predictive_modeling():
-    st.header('Plot of Data')
-
-
-
-
-import streamlit as st
-import plotly.express as px
-import plotly.graph_objects as go
-from sklearn.linear_model import LinearRegression
-from sklearn.metrics import mean_squared_error, r2_score
-import numpy as np
-import pandas as pd
-
 
 def team_data(df1):
     # Create two columns
