@@ -223,9 +223,11 @@ def predictive_team_data(df1):
                 'min_samples_leaf': [1, 2, 4]
             }
             rf = RandomForestRegressor(random_state=42)
-            rf_grid = GridSearchCV(rf, rf_param_grid, cv=5, scoring='r2')
+            n_splits = min(5, len(X_train))  # set maximum number of splits to the number of samples in X_train
+            rf_grid = GridSearchCV(rf, rf_param_grid, cv=n_splits, scoring='r2')
             rf_grid.fit(X_train, y_train)
             rf_best = rf_grid.best_estimator_
+
 
             # Predict next season's statistics
             next_stat = rf_best.predict(X_test)
@@ -343,7 +345,8 @@ def predictive_player_data(df2):
                 'min_samples_leaf': [1, 2, 4]
             }
             rf = RandomForestRegressor(random_state=42)
-            rf_grid = GridSearchCV(rf, rf_param_grid, cv=5, scoring='r2')
+            n_splits = min(5, len(X_train))  # set maximum number of splits to the number of samples in X_train
+            rf_grid = GridSearchCV(rf, rf_param_grid, cv=n_splits, scoring='r2')
             rf_grid.fit(X_train, y_train)
             rf_best = rf_grid.best_estimator_
             # Predict next season's statistics
