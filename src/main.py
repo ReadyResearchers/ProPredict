@@ -260,6 +260,7 @@ def predictive_team_data(df1):
 
 
 
+
 def predictive_player_data(df2):
     # Create three columns
     col3, col4, col5 = st.columns(3)
@@ -267,8 +268,7 @@ def predictive_player_data(df2):
     # Select one or more teams from dropdown list
     sorted_unique_team = sorted(df2.TEAM.unique())
     teams_option = ['All Teams'] + sorted_unique_team
-    selected_teams = st.multiselect('Team', teams_option, default='All Teams')
-
+    selected_teams = col5.multiselect('Team', teams_option, default='All Teams')
     try:
         # Select appropriate data based on selected team(s)
         if not selected_teams:
@@ -280,46 +280,40 @@ def predictive_player_data(df2):
     except ValueError as e:
         st.warning(str(e))
         return
-
     players = df_selected_teams['Player'].unique()
-    selected_player = col4.selectbox("Select player", players)
+    selected_player = col5.selectbox("Select player", players)
     filtered_data_players = df_selected_teams[df_selected_teams['Player'] == selected_player]
-
     # Select X and Y axes for scatter plot
     # exlude unnecessary collumns (ones that contain stringified dates)
-    exclude_cols = ['TEAM', 'Player', 'YEAR']
+    exclude_cols = ['TEAM', 'Player']
+    x_axis_options = [col for col in filtered_data_players.columns if col not in exclude_cols]
     y_axis_options = [col for col in filtered_data_players.columns if col not in exclude_cols]
-    y_axis_val = col3.selectbox('Select the Y-axis', options=y_axis_options)
-
-    # Create scatter plot with linear regression trendline
-    plot = px.scatter(filtered_data_players, x='YEAR', y=y_axis_val, color=filtered_data_players.TEAM, trendline='ols',
-                    trendline_color_override='green', hover_name="TEAM", hover_data=["YEAR"])
-
+    x_axis_val = col3.selectbox('Select the X-axis', options=x_axis_options, key="3")
+    y_axis_val = col4.selectbox('Select the Y-axis', options=y_axis_options, key="4")
+    
+    plot = px.scatter(filtered_data_players, x=x_axis_val, y=y_axis_val, color='TEAM', trendline='ols',
+                      trendline_color_override='green', hover_name="Player", hover_data=["TEAM", "YEAR"])
+    
     # Compute and display R-squared value
-    y = df_selected_teams[y_axis_val]
-    slope, intercept, r_value, p_value, std_err = stats.linregress(filtered_data_players.YEAR, y)
+    X = filtered_data_players[x_axis_val]
+    y = filtered_data_players[y_axis_val]
+    slope, intercept, r_value, p_value, std_err = stats.linregress(X, y)
     r_squared = r_value ** 2
     st.write(f"Scatter plot R-squared value: {r_squared:.2f}")
-
     # Add prediction for next season
-    if y_axis_val != 'YEAR':
-        X_train = filtered_data_players[filtered_data_players.YEAR < 2022][['YEAR']]
+    if x_axis_val == 'YEAR' and y_axis_val != 'YEAR':
+        X_train = filtered_data_players[filtered_data_players.YEAR < 2022][[x_axis_val]]
         y_train = filtered_data_players[filtered_data_players.YEAR < 2022][y_axis_val]
         X_test = np.array([2022]).reshape(-1, 1)
-
-
-
         # Hyperparameter tuning for linear regression model
         lr_param_grid = {'fit_intercept': [True, False]}
         lr = LinearRegression()
         lr_grid = GridSearchCV(lr, lr_param_grid, cv=5, scoring='r2')
         lr_grid.fit(X_train, y_train)
         lr_best = lr_grid.best_estimator_
-
         # Evaluate linear regression model
         y_pred_lr = lr_best.predict(X_train)
         r2_lr = r2_score(y_train, y_pred_lr)
-
         if round(r2_lr,1) >= 0.5:  # Use linear regression model if R-squared value is significant
             next_stat = lr_best.predict(X_test)
             st.write(f"Predicted {y_axis_val} for 2022: {next_stat[0]:.2f}")
@@ -351,7 +345,6 @@ def predictive_player_data(df2):
             rf_grid = GridSearchCV(rf, rf_param_grid, cv=5, scoring='r2')
             rf_grid.fit(X_train, y_train)
             rf_best = rf_grid.best_estimator_
-
             # Predict next season's statistics
             next_stat = rf_best.predict(X_test)
             st.write(f"Predicted {y_axis_val} for 2022: {next_stat[0]:.2f}")
@@ -368,17 +361,13 @@ def predictive_player_data(df2):
                     )
                 )
             )
-
             # Evaluation metrics
             y_pred_train_rf = rf_best.predict(X_train)
             mse_train_rf = mean_squared_error(y_train, y_pred_train_rf)
             r2_train_rf = r2_score(y_train, y_pred_train_rf)
             st.write(f"Random Forest Model Training set mean squared error: {mse_train_rf:.2f}")
             st.write(f"Random Forest Model Training set R-squared: {r2_train_rf:.2f}")
-
         
-
-
             # Display scatter plot
         st.plotly_chart(plot, use_container_width=True)
 
