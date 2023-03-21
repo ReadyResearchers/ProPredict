@@ -78,6 +78,7 @@ After all dependencies are installed you can run the following command : `stream
 - The app supports uploading different CSV files and selecting different X and Y elements for each file.
 
 
+
 5. Close the Streamlit app by pressing Ctrl+C in your terminal or closing the browser window.
 
 

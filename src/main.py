@@ -6,7 +6,9 @@ import plotly.express as px
 import plotly.graph_objects as go
 import datetime
 import numpy as np
-from sklearn.linear_model import LinearRegression
+from sklearn.linear_model import LinearRegression, Ridge
+from sklearn.model_selection import GridSearchCV
+from sklearn.ensemble import RandomForestRegressor
 from sklearn import datasets, linear_model
 from sklearn.metrics import mean_squared_error, r2_score
 from PIL import Image
@@ -41,6 +43,7 @@ def data_summary(df1,df2):
 
 
 def team_data(df1):
+    plot = go.Figure()
     # Create two columns
     col1, col2 = st.columns(2)
 
@@ -69,42 +72,86 @@ def team_data(df1):
     y_axis_options = [col for col in df_selected_teams.columns if col not in exclude_cols]
     y_axis_val = col2.selectbox('Select the Y-axis', options=y_axis_options)
 
-    # Create scatter plot with linear regression trendline
-    plot = px.scatter(df_selected_teams, x=x_axis_val, y=y_axis_val, color=df_selected_teams.TEAM, trendline='ols',
-                      trendline_color_override='green', hover_name="TEAM", hover_data=["YEAR", "W"])
-
-    # Add linear regression prediction for next season
+        # Add prediction for next season
     if x_axis_val == 'YEAR' and y_axis_val != 'YEAR':
+        X_train = df_selected_teams[df_selected_teams.YEAR < 2022][[x_axis_val]]
+        y_train = df_selected_teams[df_selected_teams.YEAR < 2022][y_axis_val]
+        X_test = np.array([2022]).reshape(-1, 1)
+
+        # Hyperparameter tuning for linear regression model
+        lr_param_grid = {'fit_intercept': [True, False], 'normalize': [True, False]}
         lr = LinearRegression()
-        X = df_selected_teams[df_selected_teams.YEAR < 2022][[x_axis_val]]
-        y = df_selected_teams[df_selected_teams.YEAR < 2022][[y_axis_val]]
-        lr.fit(X, y)
-        next_season = 2022
-        next_year = np.array([next_season]).reshape(-1, 1)
-        next_stat = lr.predict(next_year)
-        st.write(f"Predicted {y_axis_val} for {next_season}: {next_stat[0][0]:.2f}")
-        plot.add_trace(
-            go.Scatter(
-                x=[next_season],
-                y=next_stat[0],
-                mode='markers',
-                name='Next season prediction',
-                marker=dict(
-                    color='red',
-                    size=10,
-                    symbol='circle'
+        lr_grid = GridSearchCV(lr, lr_param_grid, cv=5, scoring='r2')
+        lr_grid.fit(X_train, y_train)
+        lr_best = lr_grid.best_estimator_
+
+        # Evaluate linear regression model
+        y_pred_lr = lr_best.predict(X_train)
+        r2_lr = r2_score(y_train, y_pred_lr)
+
+        if r2_lr >= 0.5:  # Use linear regression model if R-squared value is significant
+            next_stat = lr_best.predict(X_test)
+            st.write(f"Predicted {y_axis_val} for 2022: {next_stat[0]:.2f}")
+            plot.add_trace(
+                go.Scatter(
+                    x=[2022],
+                    y=[next_stat[0]],
+                    mode='markers',
+                    name='Next season prediction',
+                    marker=dict(
+                        color='red',
+                        size=10,
+                        symbol='circle'
+                    )
                 )
             )
-        )
-        # Evaluation metrics
-        y_pred = lr.predict(X)
-        mse = mean_squared_error(y, y_pred)
-        r2 = r2_score(y, y_pred)
-        st.write(f"Mean squared error: {mse:.2f}")
-        st.write(f"R-squared: {r2:.2f}")
+            # Evaluation metrics
+            mse_lr = mean_squared_error(y_train, y_pred_lr)
+            st.write(f"Linear Regression Model Training set mean squared error: {mse_lr:.2f}")
+            st.write(f"Linear Regression Model Training set R-squared: {r2_lr:.2f}")
+        else:  # Use random forest model if R-squared value is not significant
+            rf_param_grid = {
+                'n_estimators': [10, 50, 100],
+                'max_depth': [3, 5, 10],
+                'min_samples_split': [2, 5, 10],
+                'min_samples_leaf': [1, 2, 4]
+            }
+            rf = RandomForestRegressor(random_state=42)
+            rf_grid = GridSearchCV(rf, rf_param_grid, cv=5, scoring='r2')
+            rf_grid.fit(X_train, y_train)
+            rf_best = rf_grid.best_estimator_
 
-    # Display scatter plot
-    st.plotly_chart(plot, use_container_width=True)
+            # Predict next season's statistics
+            next_stat = rf_best.predict(X_test)
+            st.write(f"Predicted {y_axis_val} for 2022: {next_stat[0]:.2f}")
+            plot.add_trace(
+                go.Scatter(
+                    x=[2022],
+                    y=[next_stat[0]],
+                    mode='markers',
+                    name='Next season prediction',
+                    marker=dict(
+                        color='red',
+                        size=10,
+                        symbol='circle'
+                    )
+                )
+            )
+
+            # Evaluation metrics
+            y_pred_train_rf = rf_best.predict(X_train)
+            mse_train_rf = mean_squared_error(y_train, y_pred_train_rf)
+            r2_train_rf = r2_score(y_train, y_pred_train_rf)
+            st.write(f"Random Forest Model Training set mean squared error: {mse_train_rf:.2f}")
+            st.write(f"Random Forest Model Training set R-squared: {r2_train_rf:.2f}")
+
+        
+
+
+            # Display scatter plot
+        st.plotly_chart(plot, use_container_width=True)
+
+
 
 
 
