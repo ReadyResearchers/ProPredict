@@ -311,7 +311,8 @@ def predictive_player_data(df2):
         # Hyperparameter tuning for linear regression model
         lr_param_grid = {'fit_intercept': [True, False]}
         lr = LinearRegression()
-        lr_grid = GridSearchCV(lr, lr_param_grid, cv=5, scoring='r2')
+        n_splits = min(5, len(X_train))  # set maximum number of splits to the number of samples in X_train
+        lr_grid = GridSearchCV(lr, lr_param_grid, cv=n_splits, scoring='r2')
         lr_grid.fit(X_train, y_train)
         lr_best = lr_grid.best_estimator_
         # Evaluate linear regression model
