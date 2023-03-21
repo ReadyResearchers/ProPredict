@@ -214,10 +214,13 @@ st.sidebar.title('Navigation')
 options = st.sidebar.radio('Select what you want to display:', ['Home', 'Data Summary', 'Data Header', 'Scatter Plot', 'Interactive Plots'])
 
 # Check if file has been uploaded
-if upload_file1 is not None:
-    df1 = pd.read_csv(upload_file1)
-if upload_file2 is not None:
-    df2 = pd.read_csv(upload_file2)
+try:
+    if upload_file1 is not None:
+        df1 = pd.read_csv(upload_file1)
+    if upload_file2 is not None:
+        df2 = pd.read_csv(upload_file2)
+except:
+    print("No file was uploaded.")
     
 # Navigation options
 if options == 'Home':
