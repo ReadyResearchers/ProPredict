@@ -56,8 +56,10 @@ def team_data(df1):
         st.warning(str(e))
         return
     
-    x_axis_val = col1.selectbox('Select the X-axis', options=df_selected_teams.columns)
-    y_axis_val = col2.selectbox('Select the Y-axis', options=df_selected_teams.columns)
+    x_axis_options = [col for col in df_selected_teams.columns if col != 'TEAM']
+    x_axis_val = col1.selectbox('Select the X-axis', options=x_axis_options)
+    y_axis_options = [col for col in df_selected_teams.columns if col != 'TEAM']
+    y_axis_val = col2.selectbox('Select the Y-axis', options=y_axis_options)
 
     plot = px.scatter(df_selected_teams, x=x_axis_val, y=y_axis_val, color = df_selected_teams.TEAM, trendline='ols',
                       trendline_color_override='green', hover_name = "TEAM", hover_data=["YEAR", "W"] )
@@ -117,8 +119,12 @@ def player_data(df2):
     selected_player = col5.selectbox("Select player", players)
     filtered_data_players = df_selected_teams[df_selected_teams['Player'] == selected_player]
 
-    x_axis_val = col3.selectbox('Select the X-axis', options=filtered_data_players.columns, key="3")
-    y_axis_val = col4.selectbox('Select the Y-axis', options=filtered_data_players.columns, key="4")
+    exclude_cols = ['Team', 'Player']
+    x_axis_options = [col for col in filtered_data_players.columns if col not in exclude_cols]
+    y_axis_options = [col for col in filtered_data_players.columns if col not in exclude_cols]
+
+    x_axis_val = col3.selectbox('Select the X-axis', options=x_axis_options, key="3")
+    y_axis_val = col4.selectbox('Select the Y-axis', options=y_axis_options, key="4")
 
     plot = px.scatter(filtered_data_players, x=x_axis_val, y=y_axis_val, color='TEAM', trendline='ols',
                       trendline_color_override='green', hover_name="Player", hover_data=["TEAM", "YEAR"])
