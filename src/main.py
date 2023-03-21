@@ -6,6 +6,7 @@ import plotly.express as px
 import plotly.graph_objects as go
 import datetime
 import numpy as np
+from sklearn.linear_model import LinearRegression
 from sklearn import datasets, linear_model
 from sklearn.metrics import mean_squared_error, r2_score
 from PIL import Image
@@ -33,31 +34,65 @@ def data_header():
 def predictive_modeling():
     st.header('Plot of Data')
 
+
+
+
 def interactive_plot():
     #USE SCATTER PLOT
     col1, col2 = st.columns(2)
     
     sorted_unique_team = sorted(df1.TEAM.unique())
-    # selected_team = st.multiselect('Team', sorted_unique_team, sorted_unique_team)
-    # st.header("You selected: {}".format(", ".join(selected_team)))
+    team_option = ['All Teams'] + sorted_unique_team
+    selected_teams = st.multiselect('Team', team_option, default='All Teams')
     
-    x_axis_val = col1.selectbox('Select the X-axis', options=df1.columns)
-    y_axis_val = col2.selectbox('Select the Y-axis', options=df1.columns)
+    if 'All Teams' in selected_teams:
+        df_selected_teams = df1.copy()
+    else:
+        df_selected_teams = df1[df1.TEAM.isin(selected_teams)].copy()
+    
+    x_axis_val = col1.selectbox('Select the X-axis', options=df_selected_teams.columns)
+    y_axis_val = col2.selectbox('Select the Y-axis', options=df_selected_teams.columns)
 
-    plot = px.scatter(df1, x=x_axis_val, y=y_axis_val, color = df1.TEAM, trendline='ols',
+    plot = px.scatter(df_selected_teams, x=x_axis_val, y=y_axis_val, color = df_selected_teams.TEAM, trendline='ols',
                       trendline_color_override='green', hover_name = "TEAM", hover_data=["YEAR", "W"] )
     
+    # Add linear regression prediction for next season
+    if x_axis_val == 'YEAR' and y_axis_val in ['PTS', 'AST', 'REB']:
+        lr = LinearRegression()
+        X = df_selected_teams[df_selected_teams.YEAR < 2022][[x_axis_val]]
+        y = df_selected_teams[df_selected_teams.YEAR < 2022][[y_axis_val]]
+        lr.fit(X, y)
+        next_season = 2022
+        next_year = np.array([next_season]).reshape(-1, 1)
+        next_stat = lr.predict(next_year)
+        st.write(f"Predicted {y_axis_val} for {next_season}: {next_stat[0][0]:.2f}")
+        plot.add_trace(
+            go.Scatter(
+                x=[next_season],
+                y=next_stat[0],
+                mode='markers',
+                name='Next season prediction',
+                marker=dict(
+                    color='red',
+                    size=10,
+                    symbol='circle'
+                )
+            )
+        )
+        # Evaluation metrics
+        y_pred = lr.predict(X)
+        mse = mean_squared_error(y, y_pred)
+        r2 = r2_score(y, y_pred)
+        st.write(f"Mean squared error: {mse:.2f}")
+        st.write(f"R-squared: {r2:.2f}")
     
-
     st.plotly_chart(plot, use_container_width=True)
-    a = px.get_trendline_results(plot).px_fit_results.iloc[0].rsquared
-    st.text("R-squared value: ")
-    if a >= .5:
-        st.markdown(a)
-        st.text('\u2713')
-    else:
-        st.markdown(a)
-        st.text('\u274c')
+
+
+
+
+
+    
 
 
 
