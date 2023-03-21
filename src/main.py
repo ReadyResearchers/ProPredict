@@ -75,6 +75,13 @@ def team_data(df1):
         # Create scatter plot with linear regression trendline
     plot = px.scatter(df_selected_teams, x=x_axis_val, y=y_axis_val, color=df_selected_teams.TEAM, trendline='ols',
                       trendline_color_override='green', hover_name="TEAM", hover_data=["YEAR", "W"])
+    
+    # Compute and display R-squared value
+    X = df_selected_teams[x_axis_val]
+    y = df_selected_teams[y_axis_val]
+    slope, intercept, r_value, p_value, std_err = stats.linregress(X, y)
+    r_squared = r_value ** 2
+    st.write(f"Scatter plot R-squared value: {r_squared:.2f}")
 
         
             # Display scatter plot
@@ -119,6 +126,13 @@ def player_data(df2):
 
     plot = px.scatter(filtered_data_players, x=x_axis_val, y=y_axis_val, color='TEAM', trendline='ols',
                       trendline_color_override='green', hover_name="Player", hover_data=["TEAM", "YEAR"])
+    
+    # Compute and display R-squared value
+    X = filtered_data_players[x_axis_val]
+    y = filtered_data_players[y_axis_val]
+    slope, intercept, r_value, p_value, std_err = stats.linregress(X, y)
+    r_squared = r_value ** 2
+    st.write(f"Scatter plot R-squared value: {r_squared:.2f}")
 
     
     # Display scatter plot
