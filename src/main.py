@@ -30,7 +30,7 @@ def home(): #uploaded_file
     st.write("3. If you are ready to research select interactive plots!")
 
 # Add image
-    st.image("img/homepage.png", caption="What will you explore...?", use_column_width=True)
+    st.image("../img/homepage.png", caption="What will you explore...?", use_column_width=True)
     
 
 def data_summary(df1,df2):
