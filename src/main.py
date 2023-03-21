@@ -14,11 +14,23 @@ from PIL import Image
 st.set_page_config(layout="wide")
 
 # Functions for each of the pages
-def home(uploaded_file):
-    if uploaded_file:
-        st.header('Begin exploring the data using the menu on the left')
-    else:
-        st.header('To begin please upload a file')
+def home(): #uploaded_file
+    # if uploaded_file:
+    #     st.header('Begin exploring the data using the menu on the left')
+    # else:
+    #     st.header('To begin please upload a file')
+    # Set page header
+    st.title("Welcome to My Streamlit App!")
+
+
+# Add instructions
+    st.write("Before you get started, look at these steps:")
+    st.write("1. Upload your data file(s) on the left!")
+    st.write("2. If you want to see your dataset select Data Summary")
+    st.write("3. If you are ready to research select interactive plots!")
+
+# Add image
+    # st.image("my_image.png", caption="Image caption goes here", use_column_width=True)
     
 
 def data_summary(df1,df2):
@@ -206,7 +218,7 @@ except:
     
 # Navigation options
 if options == 'Home':
-    home(upload_file1)
+    home()
 elif options == 'Data Summary':
     data_summary(df1,df2)
 elif options == 'Interactive Plots':
