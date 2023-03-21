@@ -83,6 +83,8 @@ After all dependencies are installed you can run the following command : `stream
 
 # Results section: pending
 
+The line of best fit is calculated by minimizing the sum of squared errors between the predicted values and the actual values in the training data set. Once the line of best fit is determined, the model can use it to predict values for new data points by plugging in the input values and computing the corresponding output values based on the equation of the line.
+
 Conclusion:
 
 Summarizes the key challenges and results
