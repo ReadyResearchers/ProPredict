@@ -37,15 +37,26 @@ def predictive_modeling():
 
 
 
+import streamlit as st
+import plotly.express as px
+import plotly.graph_objects as go
+from sklearn.linear_model import LinearRegression
+from sklearn.metrics import mean_squared_error, r2_score
+import numpy as np
+import pandas as pd
+
+
 def team_data(df1):
-    #USE SCATTER PLOT
+    # Create two columns
     col1, col2 = st.columns(2)
-    
+
+    # Select one or more teams from dropdown list
     sorted_unique_team = sorted(df1.TEAM.unique())
     team_option = ['All Teams'] + sorted_unique_team
     selected_teams = st.multiselect('Team', team_option, default='All Teams')
 
     try:
+        # Select appropriate data based on selected team(s)
         if not selected_teams:
             raise ValueError('Please select at least one team.')
         elif 'All Teams' in selected_teams:
@@ -55,15 +66,19 @@ def team_data(df1):
     except ValueError as e:
         st.warning(str(e))
         return
-    
-    x_axis_options = [col for col in df_selected_teams.columns if col != 'TEAM']
+
+    # Select X and Y axes for scatter plot
+    exclude_cols = ['TEAM']
+
+    x_axis_options = [col for col in df_selected_teams.columns if col not in exclude_cols]
     x_axis_val = col1.selectbox('Select the X-axis', options=x_axis_options)
-    y_axis_options = [col for col in df_selected_teams.columns if col != 'TEAM']
+    y_axis_options = [col for col in df_selected_teams.columns if col not in exclude_cols]
     y_axis_val = col2.selectbox('Select the Y-axis', options=y_axis_options)
 
-    plot = px.scatter(df_selected_teams, x=x_axis_val, y=y_axis_val, color = df_selected_teams.TEAM, trendline='ols',
-                      trendline_color_override='green', hover_name = "TEAM", hover_data=["YEAR", "W"] )
-    
+    # Create scatter plot with linear regression trendline
+    plot = px.scatter(df_selected_teams, x=x_axis_val, y=y_axis_val, color=df_selected_teams.TEAM, trendline='ols',
+                      trendline_color_override='green', hover_name="TEAM", hover_data=["YEAR", "W"])
+
     # Add linear regression prediction for next season
     if x_axis_val == 'YEAR' and y_axis_val != 'YEAR':
         lr = LinearRegression()
@@ -93,8 +108,10 @@ def team_data(df1):
         r2 = r2_score(y, y_pred)
         st.write(f"Mean squared error: {mse:.2f}")
         st.write(f"R-squared: {r2:.2f}")
-    
+
+    # Display scatter plot
     st.plotly_chart(plot, use_container_width=True)
+
 
 
 def player_data(df2):
@@ -119,7 +136,7 @@ def player_data(df2):
     selected_player = col5.selectbox("Select player", players)
     filtered_data_players = df_selected_teams[df_selected_teams['Player'] == selected_player]
 
-    exclude_cols = ['Team', 'Player']
+    exclude_cols = ['TEAM', 'Player']
     x_axis_options = [col for col in filtered_data_players.columns if col not in exclude_cols]
     y_axis_options = [col for col in filtered_data_players.columns if col not in exclude_cols]
 
