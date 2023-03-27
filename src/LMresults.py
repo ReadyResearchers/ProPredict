@@ -318,26 +318,26 @@ def predictive_player_data(df2):
         # Evaluate linear regression model
         y_pred_lr = lr_best.predict(X_train)
         r2_lr = r2_score(y_train, y_pred_lr)
-        if round(r2_lr,1) >= 0:  # Use linear regression model if R-squared value is significant
-            next_stat = lr_best.predict(X_test)
-            st.write(f"Predicted {y_axis_val} for 2022: {next_stat[0]:.2f}")
-            plot.add_trace(
-                go.Scatter(
-                    x=[2022],
-                    y=[next_stat[0]],
-                    mode='markers',
-                    name='Next season prediction',
-                    marker=dict(
-                        color='red',
-                        size=10,
-                        symbol='circle'
-                    )
+        
+        next_stat = lr_best.predict(X_test)
+        st.write(f"Predicted {y_axis_val} for 2022: {next_stat[0]:.2f}")
+        plot.add_trace(
+            go.Scatter(
+                x=[2022],
+                y=[next_stat[0]],
+                mode='markers',
+                name='Next season prediction',
+                marker=dict(
+                    color='red',
+                    size=10,
+                    symbol='circle'
                 )
             )
+        )
             # Evaluation metrics
-            mse_lr = mean_squared_error(y_train, y_pred_lr)
-            st.write(f"Linear Regression Model Training set mean squared error: {mse_lr:.2f}")
-            st.write(f"Linear Regression Model Training set R-squared: {r2_lr:.2f}")
+        mse_lr = mean_squared_error(y_train, y_pred_lr)
+        st.write(f"Linear Regression Model Training set mean squared error: {mse_lr:.2f}")
+        st.write(f"Linear Regression Model Training set R-squared: {r2_lr:.2f}")
         
             # Display scatter plot
         st.plotly_chart(plot, use_container_width=True)

@@ -13,6 +13,7 @@ from sklearn import datasets, linear_model
 from sklearn.metrics import mean_squared_error, r2_score
 from PIL import Image
 from scipy import stats
+from sklearn.model_selection import RandomizedSearchCV
 
 st.set_page_config(layout="wide")
 
@@ -303,24 +304,25 @@ def predictive_player_data(df2):
     slope, intercept, r_value, p_value, std_err = stats.linregress(X, y)
     r_squared = r_value ** 2
     st.write(f"Scatter plot R-squared value: {r_squared:.2f}")
-    # Add prediction for next season
+    # Add random forest prediction for next season
     if x_axis_val == 'YEAR' and y_axis_val != 'YEAR':
-        X_train = filtered_data_players[filtered_data_players.YEAR < 2022][[x_axis_val]]
-        y_train = filtered_data_players[filtered_data_players.YEAR < 2022][y_axis_val]
+        X_train = df_selected_teams[df_selected_teams.YEAR < 2022][[x_axis_val]]
+        y_train = df_selected_teams[df_selected_teams.YEAR < 2022][y_axis_val]
         X_test = np.array([2022]).reshape(-1, 1)
-        # Use random forest model if R-squared value is not significant
-        rf_param_grid = {
+
+        # Hyperparameter tuning for random forest model
+        param_distributions = {
             'n_estimators': [10, 50, 100],
             'max_depth': [3, 5, 10],
             'min_samples_split': [2, 5, 10],
             'min_samples_leaf': [1, 2, 4]
         }
         rf = RandomForestRegressor(random_state=42)
-        n_splits = min(5, len(X_train))  # set maximum number of splits to the number of samples in X_train
-        rf_grid = GridSearchCV(rf, rf_param_grid, cv=n_splits, scoring='r2')
-        rf_grid.fit(X_train, y_train)
-        rf_best = rf_grid.best_estimator_
-            # Predict next season's statistics
+        randomized = RandomizedSearchCV(rf, param_distributions, cv=5, scoring='r2', n_iter=20, random_state=42)
+        randomized.fit(X_train, y_train)
+        rf_best = randomized.best_estimator_
+
+        # Predict next season's statistics
         next_stat = rf_best.predict(X_test)
         st.write(f"Predicted {y_axis_val} for 2022: {next_stat[0]:.2f}")
         plot.add_trace(
@@ -336,15 +338,18 @@ def predictive_player_data(df2):
                 )
             )
         )
-            # Evaluation metrics
-        y_pred_train_rf = rf_best.predict(X_train)
-        mse_train_rf = mean_squared_error(y_train, y_pred_train_rf)
-        r2_train_rf = r2_score(y_train, y_pred_train_rf)
-        st.write(f"Random Forest Model Training set mean squared error: {mse_train_rf:.2f}")
-        st.write(f"Random Forest Model Training set R-squared: {r2_train_rf:.2f}")
-        
-            # Display scatter plot
+
+        # Evaluation metrics
+        y_pred_train = rf_best.predict(X_train)
+        mse_train = mean_squared_error(y_train, y_pred_train)
+        r2_train = r2_score(y_train, y_pred_train)
+
+        st.write(f"Training set mean squared error: {mse_train:.2f}")
+        st.write(f"Training set R-squared: {r2_train:.2f}")
+
+        # Display scatter plot
         st.plotly_chart(plot, use_container_width=True)
+
 
 
     

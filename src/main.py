@@ -13,6 +13,8 @@ from sklearn import datasets, linear_model
 from sklearn.metrics import mean_squared_error, r2_score
 from PIL import Image
 from scipy import stats
+from sklearn.model_selection import RandomizedSearchCV
+from scipy.stats import randint
 
 st.set_page_config(layout="wide")
 
