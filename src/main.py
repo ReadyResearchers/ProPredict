@@ -347,7 +347,7 @@ def predictive_player_data(df2):
             st.write(f"Linear Regression Model Training set R-squared: {r2_lr:.2f}")
         
         elif model_name == "Random Forest":
-            rf_param_grid = {
+            rf_param_dist = {
                 'n_estimators': [10, 50, 100],
                 'max_depth': [3, 5, 10],
                 'min_samples_split': [2, 5, 10],
@@ -355,9 +355,16 @@ def predictive_player_data(df2):
             }
             rf = RandomForestRegressor(random_state=42)
             n_splits = min(5, len(X_train))  # set maximum number of splits to the number of samples in X_train
-            rf_grid = GridSearchCV(rf, rf_param_grid, cv=n_splits, scoring='r2')
-            rf_grid.fit(X_train, y_train)
-            rf_best = rf_grid.best_estimator_
+            rf_random = RandomizedSearchCV(
+                rf,
+                param_distributions=rf_param_dist,
+                n_iter=10,  # set the number of parameter settings to sample
+                cv=n_splits,
+                scoring='r2',
+                random_state=42
+            )
+            rf_random.fit(X_train, y_train)
+            rf_best = rf_random.best_estimator_
             # Predict next season's statistics
             next_stat = rf_best.predict(X_test)
             st.write(f"Predicted {y_axis_val} for 2022: {next_stat[0]:.2f}")
@@ -380,9 +387,10 @@ def predictive_player_data(df2):
             r2_train_rf = r2_score(y_train, y_pred_train_rf)
             st.write(f"Random Forest Model Training set mean squared error: {mse_train_rf:.2f}")
             st.write(f"Random Forest Model Training set R-squared: {r2_train_rf:.2f}")
-        
+
             # Display scatter plot
         st.plotly_chart(plot, use_container_width=True)
+
 
 
     
