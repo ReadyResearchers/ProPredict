@@ -310,17 +310,22 @@ def predictive_player_data(df2):
         X_train = filtered_data_players[filtered_data_players.YEAR < 2022][[x_axis_val]]
         y_train = filtered_data_players[filtered_data_players.YEAR < 2022][y_axis_val]
         X_test = np.array([2022]).reshape(-1, 1)
-        # Hyperparameter tuning for linear regression model
-        lr_param_grid = {'fit_intercept': [True, False]}
-        lr = LinearRegression()
-        n_splits = min(5, len(X_train))  # set maximum number of splits to the number of samples in X_train
-        lr_grid = GridSearchCV(lr, lr_param_grid, cv=n_splits, scoring='r2')
-        lr_grid.fit(X_train, y_train)
-        lr_best = lr_grid.best_estimator_
-        # Evaluate linear regression model
-        y_pred_lr = lr_best.predict(X_train)
-        r2_lr = r2_score(y_train, y_pred_lr)
-        if round(r2_lr,1) >= 0.5:  # Use linear regression model if R-squared value is significant
+
+        # Create a dropdown menu for selecting the model
+        model_name = st.sidebar.selectbox("Select a model", ["Linear Regression", "Random Forest"])
+    
+        if model_name == "Linear Regression":
+            # Hyperparameter tuning for linear regression model
+            lr_param_grid = {'fit_intercept': [True, False]}
+            lr = LinearRegression()
+            n_splits = min(5, len(X_train))  # set maximum number of splits to the number of samples in X_train
+            lr_grid = GridSearchCV(lr, lr_param_grid, cv=n_splits, scoring='r2')
+            lr_grid.fit(X_train, y_train)
+            lr_best = lr_grid.best_estimator_
+            # Evaluate linear regression model
+            y_pred_lr = lr_best.predict(X_train)
+            r2_lr = r2_score(y_train, y_pred_lr)
+        
             next_stat = lr_best.predict(X_test)
             st.write(f"Predicted {y_axis_val} for 2022: {next_stat[0]:.2f}")
             plot.add_trace(
@@ -340,7 +345,8 @@ def predictive_player_data(df2):
             mse_lr = mean_squared_error(y_train, y_pred_lr)
             st.write(f"Linear Regression Model Training set mean squared error: {mse_lr:.2f}")
             st.write(f"Linear Regression Model Training set R-squared: {r2_lr:.2f}")
-        else:  # Use random forest model if R-squared value is not significant
+        
+        elif model_name == "Random Forest":
             rf_param_grid = {
                 'n_estimators': [10, 50, 100],
                 'max_depth': [3, 5, 10],

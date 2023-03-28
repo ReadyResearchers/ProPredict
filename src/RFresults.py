@@ -14,6 +14,7 @@ from sklearn.metrics import mean_squared_error, r2_score
 from PIL import Image
 from scipy import stats
 from sklearn.model_selection import RandomizedSearchCV
+from scipy.stats import randint
 
 st.set_page_config(layout="wide")
 
@@ -263,92 +264,78 @@ def predictive_team_data(df1):
 
 
 
+    def predictive_player_data(df2):
+        # Create three columns
+        col3, col4, col5 = st.columns(3)
+
+        # Select one or more teams from dropdown list
+        sorted_unique_team = sorted(df2.TEAM.unique())
+        teams_option = ['All Teams'] + sorted_unique_team
+        selected_teams = col5.multiselect('Team', teams_option, default='All Teams')
+        try:
+            # Select appropriate data based on selected team(s)
+            if not selected_teams:
+                raise ValueError('Please select at least one team.')
+            elif 'All Teams' in selected_teams:
+                df_selected_teams = df2.copy()
+            else:
+                df_selected_teams = df2[df2.TEAM.isin(selected_teams)].copy()
+        except ValueError as e:
+            st.warning(str(e))
+            return
+
+        players = df_selected_teams['Player'].unique()
+        selected_player = col5.selectbox("Select player", players)
+
+        filtered_data_players = df_selected_teams[df_selected_teams['Player'] == selected_player]
+
+        # Select X and Y axes for scatter plot
+        # exlude unnecessary collumns (ones that contain stringified dates)
+        exclude_cols = ['TEAM', 'Player']
+        x_axis_options = [col for col in filtered_data_players.columns if col not in exclude_cols]
+        y_axis_options = [col for col in filtered_data_players.columns if col not in exclude_cols]
+        x_axis_val = col3.selectbox('Select the X-axis', options=x_axis_options, key="3")
+        y_axis_val = col4.selectbox('Select the Y-axis', options=y_axis_options, key="4")
+
+        # Compute and display R-squared value
+        X = filtered_data_players[x_axis_val]
+        y = filtered_data_players[y_axis_val]
+
+        # Call train_predictive_model to get predictions
+        model, _, _ = train_predictive_model(df_selected_teams, x_axis_val, y_axis_val)
+        y_pred = model.predict(X.values.reshape(-1, 1))
+
+        # Create plot
+        plot = px.scatter(filtered_data_players, x=x_axis_val, y=y_axis_val, color='TEAM', trendline='ols',
+                        trendline_color_override='green', hover_name="Player", hover_data=["TEAM", "YEAR"])
+        plot.add_trace(go.Scatter(x=X, y=y_pred, mode='lines', name='Prediction'))
+
+        st.plotly_chart(plot)
 
 
-def predictive_player_data(df2):
-    # Create three columns
-    col3, col4, col5 = st.columns(3)
     
-    # Select one or more teams from dropdown list
-    sorted_unique_team = sorted(df2.TEAM.unique())
-    teams_option = ['All Teams'] + sorted_unique_team
-    selected_teams = col5.multiselect('Team', teams_option, default='All Teams')
-    try:
-        # Select appropriate data based on selected team(s)
-        if not selected_teams:
-            raise ValueError('Please select at least one team.')
-        elif 'All Teams' in selected_teams:
-            df_selected_teams = df2.copy()
-        else:
-            df_selected_teams = df2[df2.TEAM.isin(selected_teams)].copy()
-    except ValueError as e:
-        st.warning(str(e))
-        return
-    players = df_selected_teams['Player'].unique()
-    selected_player = col5.selectbox("Select player", players)
-    filtered_data_players = df_selected_teams[df_selected_teams['Player'] == selected_player]
-    # Select X and Y axes for scatter plot
-    # exlude unnecessary collumns (ones that contain stringified dates)
-    exclude_cols = ['TEAM', 'Player']
-    x_axis_options = [col for col in filtered_data_players.columns if col not in exclude_cols]
-    y_axis_options = [col for col in filtered_data_players.columns if col not in exclude_cols]
-    x_axis_val = col3.selectbox('Select the X-axis', options=x_axis_options, key="3")
-    y_axis_val = col4.selectbox('Select the Y-axis', options=y_axis_options, key="4")
-    
-    plot = px.scatter(filtered_data_players, x=x_axis_val, y=y_axis_val, color='TEAM', trendline='ols',
-                      trendline_color_override='green', hover_name="Player", hover_data=["TEAM", "YEAR"])
-    
-    # Compute and display R-squared value
-    X = filtered_data_players[x_axis_val]
-    y = filtered_data_players[y_axis_val]
-    slope, intercept, r_value, p_value, std_err = stats.linregress(X, y)
-    r_squared = r_value ** 2
-    st.write(f"Scatter plot R-squared value: {r_squared:.2f}")
-    # Add random forest prediction for next season
-    if x_axis_val == 'YEAR' and y_axis_val != 'YEAR':
-        X_train = df_selected_teams[df_selected_teams.YEAR < 2022][[x_axis_val]]
-        y_train = df_selected_teams[df_selected_teams.YEAR < 2022][y_axis_val]
+    def train_predictive_model(df2, x_col, y_col):
+        X_train = df2[df2.YEAR < 2022][[x_col]]
+        y_train = df2[df2.YEAR < 2022][y_col]
         X_test = np.array([2022]).reshape(-1, 1)
-
-        # Hyperparameter tuning for random forest model
-        param_distributions = {
+        
+        rf_param_grid = {
             'n_estimators': [10, 50, 100],
             'max_depth': [3, 5, 10],
             'min_samples_split': [2, 5, 10],
             'min_samples_leaf': [1, 2, 4]
         }
         rf = RandomForestRegressor(random_state=42)
-        randomized = RandomizedSearchCV(rf, param_distributions, cv=5, scoring='r2', n_iter=20, random_state=42)
-        randomized.fit(X_train, y_train)
-        rf_best = randomized.best_estimator_
-
+        n_splits = min(5, len(X_train))  # set maximum number of splits to the number of samples in X_train
+        rf_grid = GridSearchCV(rf, rf_param_grid, cv=n_splits, scoring='r2')
+        rf_grid.fit(X_train, y_train)
+        rf_best = rf_grid.best_estimator_
+        
         # Predict next season's statistics
         next_stat = rf_best.predict(X_test)
-        st.write(f"Predicted {y_axis_val} for 2022: {next_stat[0]:.2f}")
-        plot.add_trace(
-            go.Scatter(
-                x=[2022],
-                y=[next_stat[0]],
-                mode='markers',
-                name='Next season prediction',
-                marker=dict(
-                    color='red',
-                    size=10,
-                    symbol='circle'
-                )
-            )
-        )
+        return next_stat[0], rf_best
 
-        # Evaluation metrics
-        y_pred_train = rf_best.predict(X_train)
-        mse_train = mean_squared_error(y_train, y_pred_train)
-        r2_train = r2_score(y_train, y_pred_train)
-
-        st.write(f"Training set mean squared error: {mse_train:.2f}")
-        st.write(f"Training set R-squared: {r2_train:.2f}")
-
-        # Display scatter plot
-        st.plotly_chart(plot, use_container_width=True)
+    
 
 
 
