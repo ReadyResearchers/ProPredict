@@ -25,7 +25,7 @@ def home(): #uploaded_file
     # else:
     #     st.header('To begin please upload a file')
     # Set page header
-    st.title("Welcome to My Streamlit App!")
+    st.title("Welcome to ProPredict!")
 
 
 # Add instructions

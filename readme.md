@@ -2,7 +2,7 @@
 
 **Background**
 
-The Sports Analysis Tool is a web application that leverages the power of Streamlit to enable users to explore and analyze NBA player and team data. The tool employs regression analysis and interactive graphing to help users arrive at meaningful conclusions about the data. Users can interact with the tool to filter and sort data, plot different variables against each other, and perform linear regression to uncover relationships between different metrics.
+ProPredict Tool is a web application that leverages the power of Streamlit to enable users to explore and analyze NBA player and team data. The tool employs regression analysis and interactive graphing to help users arrive at meaningful conclusions about the data. Users can interact with the tool to filter and sort data, plot different variables against each other, and perform linear regression to uncover relationships between different metrics. The pro stands for "proactive," highlighting the tool's ability to provide insights and predictions that can help YOU stay ahead of the curve in their sports analysis.
 
 The interface is designed to be user-friendly and accessible to users of all levels of expertise. Whether you are a data scientist, a sports analyst, or a casual fan, the tool can help you gain insights into player and team performance, identify trends, and make data-driven decisions. Some of the features of the tool include a dashboard for easy navigation, customizable graphs and charts, and the ability to export data and visualizations.
 
