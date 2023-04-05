@@ -1,4 +1,4 @@
-# Linear Regression Analysis of Basketballs Top Offensive Strategies
+# ProPredict
 
 **Background**
 
