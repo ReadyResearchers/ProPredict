@@ -1,0 +1,4 @@
+name: Pylint
+
+on: [push]
+
