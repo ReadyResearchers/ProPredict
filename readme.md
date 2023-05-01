@@ -14,30 +14,28 @@ Whether you are a sports analyst, a coach, or a fan, the tool can help you make 
 
 To install and run the web app, please follow these steps:
 
-1. Install streamlit using pip:
-
-```text
-pip install streamlit
-```
-
-2. Clone the repository and navigate to the project directory:
+1. Clone the repository and navigate to the project directory:
 
 ```text
 git clone https://github.com/username/repo-name.git
 cd repo-name
 ```
 
-3. Install the required packages using pip:
+2. Install dependancies using pip from root directory of repository
 
 ```text
-pip install package_name
+pip install -r requirements.txt
 ```
 
-4. Run the app!
+3. Run the app!
+
+Navigate to the `src` folder and run the main file
 
 ```text
-streamlit run <name_of_python_file>
+streamlit run main.py
 ```
+
+4. Local Host browser will open with the streamlit dashboard!
 
 # Project Structure
 
