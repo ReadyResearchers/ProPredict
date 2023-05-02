@@ -17,7 +17,10 @@ jobs:
           python-version: 3.8
       
       - name: Install dependencies
-        run: pip install pylint
+        run: pip install black
       
-      - name: Run pylint
-        run: pylint src/main.py
+      - name: Install imports
+        run: pip install -r requirements.txt
+      
+      - name: Run black
+        run: black src/main.py
