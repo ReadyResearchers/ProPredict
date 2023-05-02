@@ -43,7 +43,7 @@ streamlit run main.py
 
  - Contains the sports csv data set you would like to conduct research upon
  
-NBA offensive team stats is located here as an example csv file
+NBA offensive team and player stats is located here as an example csv file
 
 `src` folder:
 
@@ -76,6 +76,7 @@ After all dependencies are installed you can run the following command : `stream
 4. Engage with machine learning algorithms to generate trained predictions
 
 - Select variables exactly like the interactive plots section above
+- Choose your predicitve model from the dropdown menu in the bottom left corner
 - Wait until the model generate's your graph with the prediciton!(denoted in red)
 
 ![Home Page](images/homepage.png)
@@ -84,7 +85,7 @@ After all dependencies are installed you can run the following command : `stream
 
 - The app supports uploading different CSV files and selecting different X and Y elements for each file.
 
-
+- See intended use to find out information regarding what type of data best suits ProPredict
 
 6. Close the Streamlit app by pressing Ctrl+C in your terminal or closing the browser window.
 
