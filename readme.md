@@ -135,7 +135,8 @@ To use this tool for its full capacity make sure to follow these steps when choo
 
 
 4. Experiments
-	The intended goal of ProPredict is creating a versatile sports analysis tool that drives performance enhancing analysis for sports teams and players, but also empowers all sports enthusiasts to create their own mini, or large scale research study. In my thesis I effectively demonstrated using this tool to run experiments to see what type of regression models are better at predicting data training the models  on year by year splits, and generating predictions for the 2022-2023 NBA season. 
+	
+The intended goal of ProPredict is creating a versatile sports analysis tool that drives performance enhancing analysis for sports teams and players, but also empowers all sports enthusiasts to create their own mini, or large scale research study. In my thesis I effectively demonstrated using this tool to run experiments to see what type of regression models are better at predicting data training the models  on year by year splits, and generating predictions for the 2022-2023 NBA season. 
 
-	This is just an example of a direction users can take this tool. The goal is to showcase the effectiveness of sports data analysis, while letting the tool's users be in the driver seat for their experiments and allow them to keep it as broad or specific as they choose!
+This is just an example of a direction users can take this tool. The goal is to showcase the effectiveness of sports data analysis, while letting the tool's users be in the driver seat for their experiments and allow them to keep it as broad or specific as they choose!
 
